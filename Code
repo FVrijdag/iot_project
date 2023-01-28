@@ -1,0 +1,156 @@
+#Hier worden alle benodigde bibliotheken opgehaald
+
+import RPi.GPIO as GPIO 
+import time
+import requests
+from time import sleep
+
+#Hier wordt gedefinieerd dat de pins op de raspberry gelijk zijn aan het BCM model
+
+GPIO.setmode(GPIO.BCM)
+
+#Dit is om te zorgen dat er geen vergissingen ontstaan bij de pins
+
+GPIO.setwarnings(False)
+
+#Hier wordt gedefinieerd dat de bewegingssensor aan GPIO.Pin 17 is gekoppeld
+
+bewegingssensor = 17
+
+#Hier wordt gedefinieerd dat de LED aan GPIO.Pin 23 is gekoppeld
+
+led = 23
+
+#Hier wordt gedefinieerd dat de bewegingssensor een inputsignaal geeft
+
+GPIO.setup(bewegingssensor, GPIO.IN)
+
+#Hier wordt gedefinieerd dat de LED een output betreft
+
+GPIO.setup(led, GPIO.OUT)
+
+currentstate = 0
+previousstate = 0
+
+try:
+
+#Hier wordt de reactie geactiveerd wanneer de bewegingssensor geen beweging detecteerd
+
+    print("Activeren...")
+
+    while GPIO.input(bewegingssensor) == 1:
+
+        currentstate = 0
+
+    print("Geactiveerd")
+
+#Als de bewegingssensor iets detecteerd terwijl hij daarvoor niks detecteerde zet hij de request in werking
+
+    while True:
+
+        currentstate = GPIO.input(bewegingssensor)
+
+        if currentstate == 1 and previousstate == 0:
+
+            print("Je accu wordt gestolen!")
+
+#Hier wordt de IFTTT reactie in werking gezet
+
+            r = requests.post('https://maker.ifttt.com/trigger/beweging_gedetecteerd/with/key/f7TQoBQVkt2ADGMArKOxbq9xuPyAzQKTAzxeW4FTFnR', params={"value1":"none","value2":"none","value3":"none"})
+
+            previousstate = 1
+            
+#Hieronder wordt het LEDje constant aan- en uitgezet
+
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.HIGH)
+            
+            sleep(0.5)
+            
+            GPIO.output(led, GPIO.LOW)
+            
+            sleep(0.5)
+
+#Nadat de LED heeft geknipperd, wordt een time-out ingezet van 300 seconden (5 minuten)
+
+            print("Time-out voor 5 minuten")
+            time.sleep(300)
+
+#Na de 5 minuten time-out begint de code weer bij het begin
+
+        elif currentstate == 0 and previousstate == 1:
+
+            print("Ik sta weer voor je paraat!")
+            previousstate = 0
+
+        time.sleep(0.01)
+
+#Als er op het toetsenbord wordt gedrukt tijdens dat de code wordt uitgevoerd, stopt de uitvoering
+
+except KeyboardInterrupt:
+    print("Stop")
+
+    GPIO.cleanup()
